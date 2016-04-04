@@ -1,0 +1,13 @@
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant nom - assumed 'nom' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 11
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant activat - assumed 'activat' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 12
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant url - assumed 'url' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 13
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant nom - assumed 'nom' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 11
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant activat - assumed 'activat' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 12
+[03-Sep-2015 12:45:55 America/Denver] PHP Notice:  Use of undefined constant url - assumed 'url' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 13
+[03-Sep-2015 12:45:55 America/Denver] PHP Warning:  json_encode(): Invalid UTF-8 sequence in argument in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 17
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant nom - assumed 'nom' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 11
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant activat - assumed 'activat' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 12
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant url - assumed 'url' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 13
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant nom - assumed 'nom' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 11
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant activat - assumed 'activat' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 12
+[03-Sep-2015 12:46:34 America/Denver] PHP Notice:  Use of undefined constant url - assumed 'url' in /home8/acgalban/public_html/gassist/scripts/geisoft/index.php on line 13

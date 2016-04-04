@@ -1,0 +1,103 @@
+/* CSS Document */
+
+* {
+    margin: 0; padding: 0;
+	font-size:14px;
+} /* selector universal */
+
+body {
+	margin:0 auto;
+	/*background: url(../images/main.png) repeat left top ;*/
+}
+
+a {
+   font:14px normal Verdana, Arial, Helvetica, sans-serif;
+   color: #990000;
+   text-decoration:none;
+}
+
+a:hover {
+   color:#0081ab;
+   text-decoration:underline;
+}
+
+#Page {
+  position:relative;
+  margin:0 auto;
+  /*height:860px;*/
+  /*background:url(../images/fons_page.png) no-repeat left top;*/
+  /*filter:alpha(opacity=90);-moz-opacity:.90;opacity:.90;*/
+}
+
+#Head {
+	position:relative;
+	top:0px;
+	left:0px;
+	height:12px;
+	background: url(../images/fons_head.png) repeat-x left top;
+	/*filter:alpha(opacity=90);-moz-opacity:.90;opacity:.90;*/
+	z-index:3;
+}
+#Login {
+	position:relative;
+	top:95px;
+	left:315px;
+	width:  734px;
+	height: 485px;
+	background: url(../images/fons_login.png) no-repeat left top;
+	/*filter:alpha(opacity=90);-moz-opacity:.90;opacity:.90;*/
+	z-index:3;
+}
+
+#LeftRibbon {
+	position:relative;
+	top:15px;
+	left:-10px;
+	width:  210px;
+	height: 64px;
+	background: url(../images/left_ribbon.png) no-repeat left top;
+	z-index:4;
+}
+#RightRibbon {
+	position:relative;
+	top:-49px;
+	left:432px;
+	width:  310px;
+	height: 64px;
+	background: url(../images/right_ribbon.png) no-repeat left top;
+	z-index:4;
+}
+
+#Slogan {
+	position:relative;
+	top:-40px;
+	left:365px;
+	width:  575px;
+	height: 41px;
+	background: url(../images/slogan_spa.png) no-repeat left top;
+	/*filter:alpha(opacity=90);-moz-opacity:.90;opacity:.90;*/
+	z-index:3;
+}
+
+#BreadCrumb {
+    position:relative;
+	top:-30px;
+	left:8px;
+	width:1145px;
+	height:25px;
+	font:14px bold Verdana, Arial, Helvetica, sans-serif;
+	color:#0033CC;
+	padding-top:7px;
+	padding-left:20px;
+	background:url(../images/fons_breadcrumb.png) repeat top left;
+}
+
+#Slider {
+    position:relative;
+	top:-40px;
+	left:15px;
+	width:630px;
+	height:340px;
+	background:url(../images/fons_slider.png) no-repeat top left;
+}
+
