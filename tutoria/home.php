@@ -346,7 +346,7 @@
 				if (existsGuardiaDiaHoraProfessor($dia,$row_torn['idfranges_horaries'],$curs_escolar,$idprofessors)) {
 					 $exist_guardia = 1;
 				}
-		    }
+                        }
 		  	if ($exist_guardia) {
 				include_once('./guard/guard_grid_inici.php');
 			}

@@ -93,9 +93,8 @@
           <li style="border-top:1px dashed #ccc; padding-top:3px;"><a style='color:#000033; text-decoration:none;' href="javascript:void(0)" onclick="open1('./mat_automat/mat_automat_grid.php',this)">Automatriculacions</a></li>
           <li style="padding-bottom:3px;"><a style='color:#000033; text-decoration:none;' href="javascript:void(0)" onclick="open1('./uf_class/uf_class_grid.php?idprofessor=<?=$idprofessors?>',this)">Establir dates UF</a></li>
           <li style="border-top:1px dashed #ccc; padding-top:3px;"><a style='color:#000033; text-decoration:none;' href="javascript:void(0)" onclick="open1('./inf_assist/inf_assist_prof_see.php?idprofessor=<?=$idprofessors?>',this)">Les meves incid&egrave;ncies</a></li>
-          
-          <?php 
-          
+        <?php 
+        
          $hosting		   = 1; //0 per instal.lacions lliures
 		 $modul_ccc        = getModulsActius()->mod_ccc;
 		 $modul_ass_servei = getModulsActius()->mod_ass_servei;
@@ -125,6 +124,14 @@
 				print('<li><a style=\'color:#000033; text-decoration:none;\' href="javascript:void(0)" onclick="open1(\'./sortides/sortides_grid.php\',this)">Sortides enregistrades</a></li>');
          else
 				print('<li><a style=\'color:#6a6a6a; text-decoration:none;\' href="javascript:void(0)">Sortides enregistrades.(N/D)</a></li>');
+         
+            /**
+             * Mostra les opcions de gestió que té el 'COORDINADOR' sobre les programacions.
+             */ 
+            if (isCarrec($idprofessors, 1)) {
+                echo "<li style='border-top:1px dashed #ccc; padding-top:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_gen_grid.php?idprofessor=" . $idprofessors . "\",this)'>Programacions generals</a></li>";
+                echo "<li style='padding-bottom:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_gen_grid.php?idprofessor=" . $idprofessors . "\",this)'>Programacions d'aula</a></li>";
+            }
          ?>
           
           </ul>
@@ -145,6 +152,7 @@
 			   if ( ($row['nom_carrec'] != 'SUPERADMINISTRADOR') && ($row['nom_carrec'] != 'ADMINISTRADOR') ) {
         ?>
 		<div title="<strong><?= $row['nom_carrec']."</strong><br>".$row['nom'] ?>" style="overflow:auto;padding:1px;">
+                    <?php print_r($row); ?>
 			<ul style="list-style:none; padding-left:1px; text-align:left;">
              <?php
 			   if ($row['nom_carrec'] == 'COORDINADOR') {
@@ -156,8 +164,7 @@
 					echo "<li><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./tutor_ccc/tutor_ccc_grid.php?grup=".$row['idgrups']."\",this)'>Gestionar CCC</a></li> ";
 			  else
 					echo "<li><a style='color:#6a6a6a; text-decoration:none;' href='javascript:void(0)'>Gestionar CCC</a></li> ";
-
-
+        
 			   }
 			   if ($row['nom_carrec'] == 'TUTOR') {
 			     echo "<li><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./tutor/tutor_alum_grid.php?grup=".$row['idgrups']."\",this)'>Gesti&oacute; alumnes</a></li> ";
@@ -168,7 +175,8 @@
 					echo "<li><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./tutor_ccc/tutor_ccc_grid.php?grup=".$row['idgrups']."\",this)'>Gestionar CCC</a></li> ";
 			  else
 					echo "<li><a style='color:#6a6a6a; text-decoration:none;' href='javascript:void(0)'>Gestionar CCC</a></li> ";
-
+                                      
+                               
 			   }
 			    if ($row['nom_carrec'] == 'RESPONSABLE DE FALTES') {
 			     echo "<li><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./conserge/conserge_grid.php\",this)'>Incid&egrave;ncies del dia</a></li> ";
