@@ -52,7 +52,7 @@
             <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch(<?php echo $idprofessor; ?>)">Cercar Programacions</a>
         </p>
         <p>
-            <a id="add_button" href="javascript:void(0)" class="easyui-linkbutton" disabled="true" data-options="iconCls:'icon-add',plain:true" onclick="gestioUFs(2)">Crear Programacio M&ograve;dul</a>
+            <a id="add_button" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="gestioUFs()">Crear Programacio M&ograve;dul</a>
             <label for="menu-gestio">Gestionar: </label>
             <a href="#" id="prevButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-print', disabled: true">Visualitzar</a>
             <a href="#" id="modButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cut', disabled: true">Modificar</a>
@@ -61,8 +61,35 @@
     </div>
 </div>
 
-<div id="win" class="easyui-window" title="Eliminar programaci&oacute;" style="width:350px;height:100px"
-        data-options="iconCls:'icon-cancel',modal:true, closed: true">
+<div id="win-add" class="easyui-window" title="Nova programaci&oacute;" style="width:650px;height:400px"
+        data-options="modal:true, closed: true">
+    <div data-options="region:'north'">
+        <div id="dlg_win" class="easyui-panel" style="width:auto;height:auto;">
+            <p>
+                <label for="pla_estudis_prog">&nbsp;Pl&agrave; d'estudi</label>
+                <select id="pla_estudis_prog" class="easyui-combogrid prog_fields" name="pla_estudis" style="width:410px">
+                </select>
+            </p>
+            <p>
+                <label for="modul_prog">&nbsp;M&ograve;dul</label>
+                <select id="modul_prog" class="easyui-combogrid prog_fields" name="moduls" style="width:410px">
+                </select>
+            </p>
+            <p>
+                <label for="curs_prog">&nbsp;Curs</label>
+                <select id="curs_prog" class="easyui-combogrid prog_fields" name="curs" style="width:410px">
+                </select>
+            </p>
+        </div>
+    </div>
+     <div data-options="region:'center'">
+        <a href="#" id="makeButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-ok'">Crear</a>
+        <a href="#" id="backButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel'">Endarrere</a>   
+     </div>
+</div>
+
+<div id="win-delete" class="easyui-window" title="Eliminar programaci&oacute;" style="width:350px;height:100px"
+        data-options="modal:true, closed: true">
     <div data-options="region:'north'">
         Segur que desitja eliminar aquesta programaci&oacute;?
     </div>
@@ -70,7 +97,6 @@
         <a href="#" id="acceptButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-ok'">Acceptar</a>
         <a href="#" id="cancelButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel'">Cancelar</a>   
      </div>
-    
 </div>
 
 <script type="text/javascript">  
@@ -90,6 +116,8 @@
         ]],
         onClickRow: getPlaEstudi
     });
+    
+    $("#pla_estudis").combogrid("setValue", "Selecciona un Pla d'estudi");
                                 
     function getPlaEstudi() {
         var codiPlaEstudi = $("#pla_estudis").combogrid("getValue");
@@ -109,6 +137,8 @@
             onClickRow: getModul
         });
         
+        $("#moduls").combogrid("setValue", "Selecciona un Mòdul");
+        
         $("#curs").combogrid({delay: 500,
             mode: 'remote',
             url: './curs/curs_getdata.php?',
@@ -122,23 +152,28 @@
             ]],
             onClickRow: getCurs
         });
+        
+        $("#curs").combogrid("setValue", "Curs");
     }
     
     function getModul() {
         var codiModul = $("#moduls").combogrid("getValue");
         programacioModul.modul = codiModul;
         
-        enabledAddButton();
+        //enabledAddButton();
     }
     
     function getCurs() {
         var codiCurs = $("#curs").combogrid("getValue");
         programacioModul.curs = codiCurs;
         
-        enabledAddButton();
+        //enabledAddButton();
     }
     
     function doSearch(idprofessor) {
+        console.log($('#pla_estudis').combogrid("getValue"));
+        console.log($('#moduls').combogrid("getValue"));
+        console.log($('#curs').combogrid("getValue"));
         $('#dg').datagrid('load',{  
                 idprofessors : idprofessor,
                 idplans_estudis : $('#pla_estudis').combogrid("getValue"),
@@ -147,13 +182,13 @@
         });
     }
     
-    function enabledAddButton() {
+    /*function enabledAddButton() {
         if (programacioModul.modul && programacioModul.curs) {
             $("#add_button").linkbutton({
                 disabled: false
             });
         }   
-    }
+    }*/
     
     function getProgramacioGenerals() {
         var dadesProgramacio = $("#dg").datagrid('getSelected');
@@ -165,13 +200,41 @@
         $("#prevButton").linkbutton({disabled: false}); 
         $("#modButton").linkbutton({disabled: false});
         $("#delButton").linkbutton({disabled: false});
+        
+        $("#modButton").bind('click', function() {
+            var url = "./vista_prog/prog_gen_form.php?idprogramacio=" + idprogramacio;
+            open1(url, this);
+        });
+        
         $('#delButton').bind('click', function(){
             eliminarProgramacio(idprogramacio);
         });
     }
     
+    function gestioUFs() {
+        $("#win-add").window('open');
+        $.post("./prog_gen/prog_gen_getFillFields.php", 
+        {
+            idpla_estudi: programacioModul.pla_estudi,
+            idmodul: programacioModul.modul,
+            idcurs: programacioModul.curs
+        }, function(data) {
+            var dadesCamps = JSON.parse(data);
+            omplirCampsModalWin(dadesCamps);
+        });
+    }
+    
+    function omplirCampsModalWin(dadesCamps) {
+        var camps = document.getElementsByClassName('prog_fields');
+        for (i = 0; i < dadesCamps.length; i++) {
+            for (camp in dadesCamps[i]) {
+                $(camps[i]).combogrid("setValue", dadesCamps[i][camp]);
+            }   
+        }
+    }
+    
     function eliminarProgramacio(idprogramacio) {
-        $("#win").window('open');
+        $("#win-delete").window('open');
         $('#acceptButton').bind('click', function(){
             $.post("./prog_gen/prog_gen_eliminar.php", {idprogramacio_general: idprogramacio});
             $("#win").window('close');

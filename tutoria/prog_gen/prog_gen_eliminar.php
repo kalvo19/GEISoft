@@ -12,3 +12,4 @@ $sql = "DELETE FROM programacions_general WHERE idprogramacio_general = $idprogr
 $rs = mysql_query($sql);
 
 
+?>

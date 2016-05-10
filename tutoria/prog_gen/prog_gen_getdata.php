@@ -17,7 +17,7 @@ $sql = "SELECT pg.idprogramacio_general, pg.nom_document, c.nom_curs, pg.data_cr
 /**
  * Afegeix un filtre de cerca sobre les programacions que es corresponguin amb el mòdul seleccionat.
  */
-if (!empty($_POST['idmoduls'])) {
+if (is_numeric($_POST['idmoduls'])) {
     $idplans_estudis = $_POST['idplans_estudis'];
     $idmoduls = $_POST['idmoduls'];
     
@@ -28,8 +28,8 @@ if (!empty($_POST['idmoduls'])) {
 /**
  * Afegeix un filtre de cerca sobre les programacions que es corresponguin amb el curs seleccionat.
  */
-if (!empty($_REQUEST['idcurs'])) {
-    $idcurs = $_REQUEST['idcurs'];
+if (is_numeric($_POST['idcurs'])) {
+    $idcurs = $_POST['idcurs'];
     $where .= " AND c.idcurs = $idcurs";
     
     $sql .= $where;
@@ -58,8 +58,6 @@ while($row = mysql_fetch_assoc($rs)){
     $i++;
 }   
     
-    echo json_encode($items);  
-
-
+echo json_encode($items);  
 
 ?>
