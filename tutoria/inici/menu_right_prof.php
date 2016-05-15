@@ -152,7 +152,6 @@
 			   if ( ($row['nom_carrec'] != 'SUPERADMINISTRADOR') && ($row['nom_carrec'] != 'ADMINISTRADOR') ) {
         ?>
 		<div title="<strong><?= $row['nom_carrec']."</strong><br>".$row['nom'] ?>" style="overflow:auto;padding:1px;">
-                    <?php print_r($row); ?>
 			<ul style="list-style:none; padding-left:1px; text-align:left;">
              <?php
 			   if ($row['nom_carrec'] == 'COORDINADOR') {

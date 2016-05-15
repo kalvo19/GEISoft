@@ -70,6 +70,8 @@
     <script type="text/javascript" src="./js/datagrid-detailview.js"></script>
     <script type="text/javascript" src="./js/jquery.edatagrid.js"></script>
     <script type="text/javascript" src="./js/jquery.Jcrop.min.js"></script>
+    <script type="text/javascript" src="./ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="./ckeditor/adapters/jquery.js"></script>
 	<script type="text/javascript" src="./js/script.js"></script>
     
     <script type="text/javascript">
