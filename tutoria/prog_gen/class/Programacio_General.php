@@ -8,8 +8,8 @@
  *
  * @author kalvo19
  */
+
 class Programacio_General {
-    
     private $idprogramacio_general;
     private $nom_document;
     private $data_creacio;
@@ -36,10 +36,98 @@ class Programacio_General {
         $this->idcurs = $idcurs;
     }
     
+    function getIdprogramacio_general() {
+        return $this->idprogramacio_general;
+    }
+
+    function getNom_document() {
+        return $this->nom_document;
+    }
+
+    function getData_creacio() {
+        return $this->data_creacio;
+    }
+
+    function getEstrategies_metodologies() {
+        return $this->estrategies_metodologies;
+    }
+
+    function getRecursos() {
+        return $this->recursos;
+    }
+
+    function getRevisat() {
+        return $this->revisat;
+    }
+
+    function getAprovat() {
+        return $this->aprovat;
+    }
+
+    function getIdperiodes_escolars() {
+        return $this->idperiodes_escolars;
+    }
+
+    function getIdprofessors() {
+        return $this->idprofessors;
+    }
+
+    function getIdmoduls() {
+        return $this->idmoduls;
+    }
+
+    function getIdcurs() {
+        return $this->idcurs;
+    }
+
+    function setIdprogramacio_general($idprogramacio_general) {
+        $this->idprogramacio_general = $idprogramacio_general;
+    }
+
+    function setNom_document($nom_document) {
+        $this->nom_document = $nom_document;
+    }
+
+    function setData_creacio($data_creacio) {
+        $this->data_creacio = $data_creacio;
+    }
+
+    function setEstrategies_metodologies($estrategies_metodologies) {
+        $this->estrategies_metodologies = $estrategies_metodologies;
+    }
+
+    function setRecursos($recursos) {
+        $this->recursos = $recursos;
+    }
+
+    function setRevisat($revisat) {
+        $this->revisat = $revisat;
+    }
+
+    function setAprovat($aprovat) {
+        $this->aprovat = $aprovat;
+    }
+
+    function setIdperiodes_escolars($idperiodes_escolars) {
+        $this->idperiodes_escolars = $idperiodes_escolars;
+    }
+
+    function setIdprofessors($idprofessors) {
+        $this->idprofessors = $idprofessors;
+    }
+
+    function setIdmoduls($idmoduls) {
+        $this->idmoduls = $idmoduls;
+    }
+
+    function setIdcurs($idcurs) {
+        $this->idcurs = $idcurs;
+    }
+    
     function guardarProgramacio() {
         $this->aprovat = "G";
         $this->revisat = "G";
-        $this->data_creacio = "CURRENT_DATE";
+        $this->data_creacio = date("Y-m-d");
         
         $sql = "SELECT MAX(idprogramacio_general) as 'maxim' FROM programacions_general";
         $rs = mysql_query($sql);
@@ -55,9 +143,11 @@ class Programacio_General {
         }
         
         $sql = "INSERT INTO programacions_general VALUES ($this->idprogramacio_general, '$this->nom_document', "
-        . "$this->data_creacio, '$this->estrategies_metodologies', '$this->recursos', '$this->revisat', '$this->aprovat', "
+        . "'$this->data_creacio', '$this->estrategies_metodologies', '$this->recursos', '$this->revisat', '$this->aprovat', "
         . "$this->idperiodes_escolars, $this->idprofessors, $this->idmoduls, $this->idcurs)";
         mysql_query($sql);
+        
+        $this->inserirModificacio();
     }
     
     function existeixProgramacio() {
@@ -80,18 +170,67 @@ class Programacio_General {
         return $items;
     }
     
+    /**
+     * 
+     * @param integer $idprogramacio_general
+     * 
+     * Elimina la programacio comuna passada com a paràmetre.
+     */
+    function eliminarProgramacio($idprogramacio_general) {
+        $sql = "DELETE FROM programacions_general WHERE idprogramacio_general = $idprogramacio_general";
+        mysql_query($sql);
+    }
+    
+    /**
+     * 
+     * @param String $nom_document
+     * 
+     * Duplica una programacio comuna i la importa al curs actual.
+     */
     function importarProgramacio($nom_document) {
         $this->nom_document = $nom_document;
         
-        $sql = "SELECT idperiodes_escolars FROM periodes_escolars WHERE actual = 'S'";
+        $sql = "SELECT  FROM periodes_escolars WHERE actual = 'S'";
+        $items = getCursActual();
+        
+        $this->idperiodes_escolars = $items->idperiodes_escolars;
+    }
+    
+    function inserirModificacio($descripcio = null) {
+        $idmodificacions = "";
+        $versio = "";
+        
+        $sql = "SELECT MAX(idmodificacions) as 'maxim' FROM modificacions";
         $rs = mysql_query($sql);
-        $items = Array();
         
         while ($row = mysql_fetch_assoc($rs)) {
-            $items[] = $row;
+            $idmodificacions = $row["maxim"];
         }
         
-        $this->idperiodes_escolars = $items[0]["idperiodes_escolars"];
+        $sql = "SELECT MAX(versio) as 'versio' FROM modificacions WHERE idprogramacio_general = $this->idprogramacio_general";
+        $rs = mysql_query($sql);
+        
+        while ($row = mysql_fetch_assoc($rs)) {
+            $versio = $row["versio"];
+        }
+        
+        if ($idmodificacions == null) {
+            $idmodificacions = 1;
+        } else {
+            $idmodificacions++;
+        }
+        
+        if ($versio == null) {
+            $versio = 1;
+        }
+        
+        if ($descripcio == null) {
+            $descripcio = "Creació del document.";
+        }
+        
+        $novaModificacio = new Modificacions($idmodificacions, $versio, $this->data_creacio, $descripcio, $this->idprogramacio_general, "null");
+        $novaModificacio->inserirModificacio();
+        
     }
     
 }

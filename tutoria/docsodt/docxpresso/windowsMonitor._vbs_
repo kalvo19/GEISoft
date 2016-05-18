@@ -1,0 +1,197 @@
+' license and authorship info
+' This script monitors the csv folder to test that soffice and docxpresso.php are working properly
+' By tunning sleepTimer and repetitions you may decide by how long a sigle conversion of soffice may be running
+' Recomended config is sleepTimer = 2000 and maxRepetitions = 15 that will limit the time to 30s without overloading the system
+'
+' @package    Docxpresso
+' @subpackage Monitor
+' @copyright  Copyright (c) 2014 No-nonsense Labs (http://www.nononsenselabs.com)
+' @license    http://www.docxpresso.com/licenses
+' @link       http://www.docxpresso.com
+' @version    2.1
+' @since      2.1
+
+'On Error Resume Next
+Option Explicit
+
+Dim dir                 'The folder to check its contents
+dir = "C:\xampp\htdocs\v2_html52pdf\csv"
+Dim logFile
+logFile = dir & "\monitor.log"
+Dim ext                 'File extension
+ext = ".csv"
+Dim keepRunning         'A dummy variable to keep the while loop running
+keepRunning = true 
+Dim currentFile         'The name of the chosen current file
+currentFile = ""
+Dim repetitions         'The number of times the same file has been chosen
+repetitions = 0
+Dim maxRepetitions      'The maximum numbuer of repetitions without taking action
+maxRepetitions = 14
+Dim WsShell             'The Wscript shell
+Set WsShell = CreateObject("Wscript.Shell")
+Dim pathToSoffice       'Full path to the soffice executable
+pathToSoffice = "C:\Program Files (x86)\LibreOffice 4\program\soffice"
+Dim sleepTimer          'Sleep time in milliseconds between checks
+sleepTimer = 2000
+Dim fileList            'File list of chosen folder (dir)
+Dim csvPos              'Position of .csv in the file name
+Dim ObjLog				'The handler to the log file
+Dim csvFile				'The handler to the csv file where the system got stuck
+Dim csvRead				'The contents of the csv file where the system got stuck
+
+Const READ = 1
+Const WRITE = 2
+Const APPEND = 8
+
+
+'Start the infinite loop
+Do
+CheckFile
+Wscript.Sleep(sleepTimer)
+Loop While keepRunning
+
+'CheckFile computes by how long the oldest csv file has been standing waiting for conversion
+'If max time = sleepTimer * repetitions is exceeded relaunches docxpresso if it is not runing or
+'simply reboots soffice
+Function CheckFile
+    Dim fileName
+	Dim fullPath
+    Dim objFSO
+	Dim files
+	Dim file
+	
+    set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set files = CreateObject("System.Collections.ArrayList")
+	
+	'order the files in alphabetical order that because of our naming convention
+	'coincides with chronological order (older first)
+    for each file in objFSO.GetFolder(dir).files
+      files.Add file.Name
+    next
+    files.Sort()
+    
+	'if the older file is not csv we set a random file name to avoid
+	'doing anything when the conversion process is idle
+	If files.Count = 0 Then
+		fileName = "random_" & Rnd
+	Else
+		csvPos = inStr(files(0), ext)
+		If csvPos > 0 Then
+			fileName = files(0)
+		Else
+			fileName = "random_" & Rnd
+		End if
+	End If
+	
+	fullPath = dir & "\" & fileName
+	
+	'If the file is the same after a cycle we increment the counte by 1 otherwise we set it to zero
+    If fileName = currentFile Then
+        repetitions = repetitions + 1
+    Else 
+        repetitions = 0
+        currentFile = fileName
+    End if
+    'MsgBox repetitions & ":" & fileName
+	
+	'If the file is the same after the maximum number of repetitions we take action
+    If repetitions > maxRepetitions Then
+	'Reinitiate the counter
+        repetitions = 0
+		'Open or create the log file if it does not yet exist
+		If objFSO.FileExists(logFile) Then
+			Set objLog = objFSO.OpenTextFile(logFile, APPEND)
+		Else
+			Set objLog = objFSO.CreateTextFile(logFile, WRITE)
+		End If
+		'Get the contents of the csv file to write them into the log
+		Set  csvFile = objFSO.openTextFile(fullPath, READ)
+		If objFSO.GetFile(fullPath).size > 0 Then 
+			csvRead = csvFile.ReadAll
+		Else
+			csvRead = "The file was empty."
+		End If
+		csvFile.Close
+		'check that docxpresso.php is running
+		If CheckDocxpresso Then
+			'MsgBox "Docxpresso.php is NOT running"
+			'Write to the log
+			objLog.WriteLine "The docxpresso.php was halted at: " & Now
+			objLog.WriteLine "The script halted while processing the " & fileName & " file with contents:"
+			objLog.WriteLine csvRead
+			objLog.WriteLine " "
+			objLog.Close
+			If objFSO.FileExists(fullPath) Then
+				objFSO.DeleteFile fullPath, True
+			End If
+			'Relaunch docxpresso.php
+			WsShell.Run "php docxpresso.php", 0, False
+		Else
+			'MsgBox "Docxpresso.php is running" & VbCrLf & "So soffice may be frozen"
+			'Write to the log
+			objLog.WriteLine "soffice was stopped at: " & Now
+			objLog.WriteLine "soffice was stopped while processing the " & fileName & " file with contents:"
+			objLog.WriteLine csvRead
+			objLog.WriteLine " "
+			objLog.Close
+			'kill docxpresso.php
+			KillDocxpresso
+			If objFSO.FileExists(fullPath) Then
+				objFSO.DeleteFile fullPath, True
+			End If
+			'Relaunch docxpresso.php
+			WsShell.Run "php docxpresso.php", 0, False
+		End If		
+    End If
+
+End Function
+
+'This checks if docxpresso is currently running. If not running returns true
+Function CheckDocxpresso
+	Dim objWMIService
+	Dim colProcesses
+	Dim objProcess
+	Dim notRunning
+	
+	Set objWMIService = GetObject("winmgmts:" _
+		& "{impersonationLevel=impersonate}!\\" _
+		& "." & "\root\cimv2")
+
+	Set colProcesses = objWMIService.ExecQuery( _
+		"Select * from Win32_Process " _
+		& "Where Name = 'php.exe'", , 48)
+
+	notRunning = True
+	For Each objProcess in colProcesses
+		If InStr (objProcess.CommandLine, "docxpresso.php") > 0 Then
+			notRunning = False
+		End If
+	Next
+	CheckDocxpresso = notRunning
+End Function
+
+'This kills any instance of docxpresso that is currently running
+Sub KillDocxpresso
+
+	Dim objWMIService
+	Dim colProcesses
+	Dim objProcess
+	
+	Set objWMIService = GetObject("winmgmts:" _
+		& "{impersonationLevel=impersonate}!\\" _
+		& "." & "\root\cimv2")
+
+	Set colProcesses = objWMIService.ExecQuery( _
+		"Select * from Win32_Process " _
+		& "Where Name = 'php.exe'", , 48)
+
+	For Each objProcess in colProcesses
+		If InStr (objProcess.CommandLine, "docxpresso.php") > 0 Then
+			objProcess.Terminate()
+		End If
+	Next
+	
+End Sub
+
+

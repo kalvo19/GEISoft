@@ -1,0 +1,14 @@
+Dim WsShell
+Dim strScript
+Dim objFSO
+Dim objScript
+Dim strDir
+
+Set WsShell = CreateObject("Wscript.Shell")
+strScript = Wscript.ScriptFullName
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objScript = objFSO.GetFile(strScript)
+strDir = objFSO.GetParentFolderName(objScript) 
+
+WsShell.Run strDir & "\windowsMonitor.vbs", 0, True
+Set WsShell = Nothing

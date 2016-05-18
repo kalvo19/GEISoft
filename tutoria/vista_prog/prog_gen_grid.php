@@ -372,7 +372,7 @@
             console.log(data);
             /**
              * data: és el resultat d'una consulta.
-             * Si data no es false s'en va a la functió que importa la programació
+             * Si data no es false s'en va a la funció que importa la programació
              */
             if (data) {
                 importarProgramacio();
@@ -401,8 +401,8 @@
                     idprogramacio_general: idprogramacio_general,
                     nom_document: nomDocument
                 }, function(data) {
-                    var idprofessor = data;
-                    doSearch(idprofessor);
+                    var resultat = JSON.parse(data);     
+                    doSearch(resultat[0].idprofessors);
                 });
                 
                 $("#win-import").window('close');
@@ -618,8 +618,8 @@
         $('#acceptButton').bind('click', function(){
             $.post("./prog_gen/prog_gen_eliminar.php", {idprogramacio_general: idprogramacio},
             function(data) {
-                var idprofessor = data;
-                doSearch(idprofessor);
+                var resultat = JSON.parse(data);     
+                doSearch(resultat[0].idprofessors);
             });
             
             $("#win-delete").window('close');

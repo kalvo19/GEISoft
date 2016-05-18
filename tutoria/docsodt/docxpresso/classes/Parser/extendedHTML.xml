@@ -1,0 +1,13 @@
+<chart />
+<endnote>Content goes here</endnote>
+<footnote>Content goes here</footnote>
+<page type="number|count" format= "1,a,A,i,I" offset="integer" />
+<date format="('day', '/', 'month', '/', 'year')" />
+<ref format="page|text" name="string" />
+<toc title="string" leader="char" linked="true|false" level="integer">
+    <outline level="integer" style="" />
+    <outline level="integer" style="" />
+</toc>
+<tab type="string" leader="string" character="string" position ="int" />
+<math />
+

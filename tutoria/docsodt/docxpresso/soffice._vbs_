@@ -1,0 +1,5 @@
+Dim strCurDir
+Dim WsShell
+Set WsShell = CreateObject("Wscript.Shell")
+WsShell.Run """"&Wscript.Arguments(0)&""" --nologo --norestore", 0, True
+Set WsShell = Nothing

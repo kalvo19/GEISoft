@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="eduardo" script:language="StarBasic">REM  *****  BASIC  *****
+
+' license and authorship info
+' This script runs the required VB scripts macros for DOCXPRESSO package
+'
+' @package    Docxpresso
+' @subpackage Macros
+' @copyright  Copyright (c) 2014 No-nonsense Labs (http://www.nononsenselabs.com)
+' @license    http://www.docxpresso.com/licenses
+' @link       http://www.docxpresso.com
+' @version    1.0
+' @since      1.0
+
+Sub Render (data)
+	
+        On Error Resume Next                            'We just ignore errors to avoid crashig the app
+        
+	options = Split(data, "|")
+	
+	
+	Dim fileName As String
+	fileName = options(0)                           ' This are general settings that start with the input file name without extension
+	Dim outputFormat As String
+	outputFormat = options(1)                       ' It can be: PDF, DOC, DOCX, RTF
+	Dim legacy As Boolean
+	legacy = options(2)                          	' Only applies to .doc format
+	Dim updateTOC As Boolean
+	updateTOC = options(3)                          ' Only applies if we want to update the TOC. Default is false
+	Dim updateFields As Boolean
+	updateFields = options(4)                       ' Only applies if we want to update simple fields. Default is false 
+	Dim updateMath As Boolean
+	updateMath = options(5)                         ' Only applies if we want to update math equations. Default is false
+	Dim PageRange As String
+	PageRange = options(6)                          ' Here start the PDF optional parameters. The default page range is an empty string
+	Dim UseLosslessCompression As Boolean
+	UseLosslessCompression = options(7)             ' If true images are not compressed. The default is false
+	Dim Quality As Long
+	Quality = options(8)                            ' The quality of the compressed images (JPG). Default value is 90
+	Dim ReduceImageResolution As Boolean
+	ReduceImageResolution = options(9)              ' If true the image resolution is changed. Default is false
+	Dim MaxImageResolution As Long
+	MaxImageResolution = options(10)                ' Maximum image resolution. Default value is 300
+	Dim SelectPdfVersion As Long
+	SelectPdfVersion = options(11)                  ' PDF version. Default value is 0 (PDF 1.4)
+	Dim UseTaggedPDF As Boolean
+	UseTaggedPDF = options(12)                      ' If true the generated PDF will be tagged for accesibility. Default value is false
+	Dim ExportFormFields As Boolean
+	ExportFormFields = options(13)                  ' Exports the form fields. Default value is true
+	Dim FormsType As Long
+	FormsType = options(14)                         ' Form protocol. Default value is 2 (HTML)
+	Dim ExportBookmarks As Boolean
+	ExportBookmarks = options(15)                   ' Exports the bookmarks. Default value is true
+	Dim EmbedStandardFonts As Boolean
+	EmbedStandardFonts = options(16)                ' Embeds the standard PDF fonts. Default value is false
+	Dim Watermark As String
+	Watermark = options(17)                         ' Watermark text. Default is an empty string
+	Dim InitialView As Long
+	InitialView = options(18)                       ' Initial view. Default value is 0 (default PDF view mode: no outlines or thumbnails)
+	Dim Magnification As Long
+	Magnification = options(19)                     ' PDF magnification on openning. Default value is 0 (no magnification)
+	Dim Zoom As Long
+	Zoom = options(20)                              ' Zoom level on openning . Default is 100 and can take values between 50 and 1600 (it only applies if Maginification equals 4)
+	Dim PageLayout As Long
+	PageLayout = options(21)                        ' PDF layout on openning. Default is 0 (default viewer layout)
+	Dim FirstPageOnLeft As Boolean
+	FirstPageOnLeft = options(22)                   ' If true the first page should be on the left. Default is false (only used if PageLayout equals 3)
+	Dim CenterWindow As Boolean
+	CenterWindow = options(23)                      ' If true the PDF window is centered in the screen. Default is false
+	Dim OpenInFullScreenMode As Boolean
+	OpenInFullScreenMode = options(24)              ' If true the PDF opens in full screen mode. Default is false
+	Dim DisplayPDFDocumentTitle As Boolean
+	DisplayPDFDocumentTitle = options(25)           ' If true the PDF window shows the document title. Default is true
+	Dim HideViewerMenubar As Boolean
+	HideViewerMenubar = options(26)                 ' If true hides the viewer menu. Default is false
+	Dim HideViewerToolbar As Boolean
+	HideViewerToolbar = options(27)                 ' If true hides the viewer toolbar. Default is false
+	Dim HideViewerWindowControls As Boolean
+	HideViewerWindowControls = options(28)          ' If true hides the viewer window controls. Default is false
+	Dim EncryptFile As Boolean
+	EncryptFile = options(29)                       ' If true encrypts the file. Default is false
+	Dim DocumentOpenPassword As String
+	DocumentOpenPassword = options(30)              ' Password to open file if the option DocumentOpenPassword is set to true. Default is an empty string
+	Dim RestrictPermissions As Boolean
+	RestrictPermissions = options(31)               ' If true restricts you may restrict printing, copying and modifying. Default is false
+	Dim PermissionPassword As String
+	PermissionPassword = options(32)                ' Password to to access the restricted functionalities if the option DocumentOpenPassword is set to true. Default is an empty string
+	Dim Printing As Long
+	Printing = options(33)                          ' Printing configuration. Default is 2 (the document can be printed with no restrictions)
+	Dim Changes As Boolean
+	Changes = options(34)                           ' Specify which changes are allowed. Default is 4 (all changes are allowed but page extraction)
+	Dim EnableCopyingOfContent As Boolean
+	EnableCopyingOfContent = options(35)            ' If true the content can be copied and pasted elsewhere. Default is true
+    
+    
+    Dim oPropertyValue As New com.sun.star.beans.PropertyValue
+    Dim oProp As New com.sun.star.beans.PropertyValue
+    
+    ' Get the input file and open it
+    If outputFormat = "DOC" Then
+    	cURL = ConvertToURL( fileName + ".doc" )
+    Else 
+    	cURL = ConvertToURL( fileName + ".odt" )
+    End If
+    oPropertyValue.Name = "Hidden"
+    oPropertyValue.Value =  True
+    oDoc = StarDesktop.loadComponentFromURL( cURL, "_blank", 0, Array(oPropertyValue))
+    
+    ' Check if we have to update fields
+    If updateFields Then
+        oDoc.TextFields.refresh
+    End If
+    
+    ' Check if we have to update the TOC
+    If updateTOC Then
+        oIndexes = oDoc.getDocumentIndexes()
+		for i = 0 to oIndexes.getCount () - 1 
+		oIndexes (i).update
+		next i
+    End If
+    
+    ' Check if we have to update math equations
+    If updateMath Then
+        embeddedObjects = oDoc.getEmbeddedObjects()
+        elementNames = embeddedObjects.getElementNames()
+        for i=0 to UBOUND(elementNames)
+            element = embeddedObjects.getByName(elementNames(i)).Model
+            oXEO = embeddedObjects.getByName(elementNames(i)).ExtendedControlOverEmbeddedObject
+            iCurrentState = oXEO.currentState
+            oXEO.changeState(com.sun.star.embed.EmbedStates.UI_ACTIVE)
+        next i
+    End If
+    
+    ' Now let us proceed at the export
+    
+    If outputFormat = "DOCX" Then
+        ' This format is not supported by OpenOffice
+    ElseIf outputFormat = "RTF" Then
+        cFile = fileName + ".rtf"
+        cURL = ConvertToURL( cFile )
+        oProp.Name = "FilterName"
+        oProp.Value =  "Rich Text Format"
+        oDoc.storeToURL( cURL, Array(oProp))
+    ElseIf outputFormat = "DOC" AND legacy Then
+        cFile = fileName + "_new.doc"
+        cURL = ConvertToURL( cFile )
+        oProp.Name = "FilterName"
+        oProp.Value =  "MS Word 97"
+        oDoc.storeToURL( cURL, Array(oProp))
+    ElseIf outputFormat = "DOC" Then
+        cFile = fileName + "_new.doc"
+        cURL = ConvertToURL( cFile )
+        oDoc.storeToURL( cURL, Array())
+    ElseIf outputFormat = "ODT" Then
+		cFile = fileName + "_new.odt"
+        cURL = ConvertToURL( cFile )
+        oDoc.storeToURL( cURL, Array())
+    Else 
+        cFile = fileName + ".pdf"
+        cURL = ConvertToURL( cFile )
+        
+        Dim filter(30)  As New com.sun.star.beans.PropertyValue
+        
+        filter(0).Name = "PageRange"  
+        filter(0).Value = PageRange
+        filter(1).Name = "UseLosslessCompression"
+        filter(1).Value = UseLosslessCompression
+        filter(2).Name = "Quality"
+        filter(2).Value = Quality
+        filter(3).Name = "ReduceImageResolution"
+        filter(3).Value = ReduceImageResolution
+        filter(4).Name = "MaxImageResolution"
+        filter(4).Value = MaxImageResolution
+        filter(5).Name = "SelectPdfVersion"
+        filter(5).Value = SelectPdfVersion
+        filter(6).Name = "UseTaggedPDF"
+        filter(6).Value = UseTaggedPDF
+        filter(7).Name = "ExportFormFields"
+        filter(7).Value = ExportFormFields
+        filter(8).Name = "FormsType"
+        filter(8).Value = FormsType
+        filter(9).Name = "ExportBookmarks"
+        filter(9).Value = ExportBookmarks
+        filter(10).Name = "EmbedStandardFonts"
+        filter(10).Value = EmbedStandardFonts
+        filter(11).Name = "Watermark"
+        filter(11).Value = Watermark
+        filter(12).Name = "InitialView"
+        filter(12).Value = InitialView
+        filter(13).Name = "Magnification"
+        filter(13).Value = Magnification
+        filter(14).Name = "Zoom"
+        filter(14).Value = Zoom
+        filter(15).Name = "PageLayout"
+        filter(15).Value = PageLayout
+        filter(16).Name = "FirstPageOnLeft"
+        filter(16).Value = FirstPageOnLeft
+        filter(17).Name = "CenterWindow"
+        filter(17).Value = CenterWindow
+        filter(18).Name = "OpenInFullScreenMode"
+        filter(18).Value = OpenInFullScreenMode
+        filter(19).Name = "DisplayPDFDocumentTitle"
+        filter(19).Value = DisplayPDFDocumentTitle
+        filter(20).Name = "HideViewerMenubar"
+        filter(20).Value = HideViewerMenubar
+        filter(21).Name = "HideViewerToolbar"
+        filter(21).Value = HideViewerToolbar
+        filter(22).Name = "HideViewerWindowControls"
+        filter(22).Value = HideViewerWindowControls
+        filter(23).Name = "EncryptFile"
+        filter(23).Value = EncryptFile
+        filter(24).Name = "DocumentOpenPassword"
+        filter(24).Value = DocumentOpenPassword
+        filter(25).Name = "RestrictPermissions"
+        filter(25).Value = RestrictPermissions
+        filter(26).Name = "PermissionPassword"
+        filter(26).Value = PermissionPassword
+        filter(27).Name = "Printing"
+        filter(27).Value = Printing
+        filter(28).Name = "Changes"
+        filter(28).Value = Changes
+        
+        Dim aFilterData(2)  As New com.sun.star.beans.PropertyValue
+        
+        aFilterData(0).Name = "FilterName"
+        aFilterData(0).Value =  "writer_pdf_Export"
+        aFilterData(1).Name = "FilterData"
+        aFilterData(1).Value =Array(filter(0), _
+                                    filter(1), _
+                                    filter(2), _
+                                    filter(3), _
+                                    filter(4), _
+                                    filter(5), _
+                                    filter(6), _
+                                    filter(7), _
+                                    filter(8), _
+                                    filter(9), _
+                                    filter(10), _
+                                    filter(11), _
+                                    filter(12), _
+                                    filter(13), _
+                                    filter(14), _
+                                    filter(15), _
+                                    filter(16), _
+                                    filter(17), _
+                                    filter(18), _
+                                    filter(19), _
+                                    filter(20), _
+                                    filter(21), _
+                                    filter(22), _
+                                    filter(23), _
+                                    filter(24), _
+                                    filter(25), _
+                                    filter(26), _
+                                    filter(27), _
+                                    filter(28), _
+                                    filter(29) _
+                                    )
+        oDoc.storeToURL( cURL, aFilterData())        
+    End If
+    
+    oDoc.close(True)
+                
+End Sub
+</script:module>
