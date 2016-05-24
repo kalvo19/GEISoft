@@ -6,19 +6,7 @@ include_once('../func/generic.php');
 include_once('./class/Programacio_General.php');
 mysql_query("SET NAMES 'utf8'");
 
-$idprogramacio = $_POST['idprogramacio_general'];
+$idmodul = $_POST['modul'];
+$idcurs = $_POST['curs'];
 
-$sql = "SELECT estrategies_metodologies, recursos, idprofessors, idmoduls, idcurs FROM programacions_general "
-. "WHERE idprogramacio_general = $idprogramacio";
-$rs = mysql_query($sql);
-$items = Array();
-
-while ($row = mysql_fetch_assoc($rs)) {
-    $items[] = $row;
-}
-
-$novaProgramacioGeneral = new Programacio_General(null, null, null, $items[0]['estrategies_metodologies'], $items[0]['recursos'], 
- null, null, null, $items[0]['idprofessors'], $items[0]['idmoduls'], $items[0]['idcurs']);
-
-$programacioValida = $novaProgramacioGeneral->existeixProgramacio();
-echo $programacioValida;
+echo Programacio_General::existeixProgramacio($idmodul, $idcurs);

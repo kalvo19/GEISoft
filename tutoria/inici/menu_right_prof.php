@@ -130,8 +130,12 @@
              */ 
             if (isCarrec($idprofessors, 1)) {
                 echo "<li style='border-top:1px dashed #ccc; padding-top:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_gen_grid.php?idprofessor=" . $idprofessors . "\",this)'>Programacions generals</a></li>";
-                echo "<li style='padding-bottom:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_gen_grid.php?idprofessor=" . $idprofessors . "\",this)'>Programacions d'aula</a></li>";
+                echo "<li style='padding-bottom:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_aula_grid.php?idprofessor=" . $idprofessors . "\",this)'>Programacions d'aula</a></li>";
+            } else if (isCarrec($idprofessors, 2)) {
+                echo "<li style='border-top:1px dashed #ccc; padding-top:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_gen_grid_coord.php?idprofessor=" . $idprofessors . "\",this)'>Programacions generals</a></li>";
+                echo "<li style='padding-bottom:3px;'><a style='color:#000033; text-decoration:none;' href='javascript:void(0)' onclick='open1(\"./vista_prog/prog_aula_grid_coord.php?idprofessor=" . $idprofessors . "\",this)'>Programacions d'aula</a></li>";
             }
+            
          ?>
           
           </ul>

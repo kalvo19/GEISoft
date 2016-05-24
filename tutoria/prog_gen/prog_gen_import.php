@@ -4,9 +4,7 @@ include_once('../bbdd/connect.php');
 include_once('../func/constants.php');
 include_once('../func/generic.php');
 include_once('./class/Programacio_General.php');
-include_once('../prog_mod/class/modificacions.php');
-include_once ('../docsodt/docxpresso/CreateDocument.inc');
-include_once('../docsodt/class/DocumentODT.php');
+include_once('../prog_mod/class/Modificacio.php');
 mysql_query("SET NAMES 'utf8'");
 
 $idprogramacio = $_POST['idprogramacio_general'];
@@ -21,14 +19,10 @@ while ($row = mysql_fetch_assoc($rs)) {
     $items[] = $row;
 }
 
-$novaProgramacioGeneral = new Programacio_General(null, null, null, $items[0]['estrategies_metodologies'], $items[0]['recursos'], 
- null, null, null, $items[0]['idprofessors'], $items[0]['idmoduls'], $items[0]['idcurs']);
+$novaProgramacioGeneral = new Programacio_General(null, $nom_document, date("Y-m-d"), $items[0]['estrategies_metodologies'], $items[0]['recursos'], 
+ 'G', 'G', null, $items[0]['idprofessors'], $items[0]['idmoduls'], $items[0]['idcurs'], null, null);
 
-$novaProgramacioGeneral->importarProgramacio($nom_document);
 $novaProgramacioGeneral->guardarProgramacio();
-
-$nouDocumentODT = new DocumentODT($novaProgramacioGeneral);
-$nouDocumentODT->generarProgramacioComuna("../docsodt/temp/programacions_comunes/$nom_document");
 
 echo json_encode($items);
     
