@@ -150,6 +150,12 @@ class Programacio_General {
         $this->idcurs = $idcurs;
     }
     
+    /**
+     * Assigna al atribut '$this->idprogramacio_general' una nou identificador per a poder inserir-lo a la base 
+     * de dades.
+     * 
+     * @return array
+     */
     function assignarIdprogramacio() {
         $sql = "SELECT MAX(idprogramacio_general) as 'maxim' FROM programacions_general";
         $rs = mysql_query($sql);
@@ -165,6 +171,10 @@ class Programacio_General {
         return ++$idprogramacio["maxim"];
     }
     
+    /**
+     * Amb la funció 'importarProgramacio()' seteja l'atribut '$this->idperiode_escolar' amb la id del periode 
+     * escolar actual i seguidament guarda la programació a la base de dades amb les dades que hi han als atributs.
+     */
     function guardarProgramacio() {
         $this->importarProgramacio();
         
@@ -173,10 +183,29 @@ class Programacio_General {
         . "$this->idperiodes_escolars, $this->idprofessors, $this->idmoduls, $this->idcurs, null, null)";
         
         mysql_query($sql);
-        
-        $this->inserirModificacio();
+      
     }
     
+    /**
+     * Modifica tots els camps de la programació que correspont al identificador que té l'atribut 
+     * '$this->idprogramacio_general' amb les dades dels atributs del objecte.
+     */
+    function modificarProgramacio(){
+        $this->importarProgramacio();
+        $sql = ("UPDATE programacions_general SET nom_document='$this->nom_document',estrategies_metodologies='$this->estrategies_metodologies',"
+        . " recursos='$this->recursos', revisat='$this->revisat' WHERE idprogramacio_general=$this->idprogramacio_general");
+        
+        mysql_query($sql);
+    }
+    
+    /**
+     * Comprova a la base de dades que no hi hagi guardada una programació del curs i del mòdul passats com a 
+     * paràmetre, en el periode escolar actual.
+     * 
+     * @param Integer $idmoduls
+     * @param Integer $idcurs
+     * @return boolean
+     */
     static function existeixProgramacio($idmoduls, $idcurs) {
         $sql = "SELECT pg.idprogramacio_general FROM moduls m, curs c, programacions_general pg WHERE pg.idmoduls = m.idmoduls "
         . "AND pg.idcurs = c.idcurs AND pg.idmoduls = $idmoduls AND pg.idcurs = $idcurs AND pg.idperiodes_escolar"
@@ -197,28 +226,35 @@ class Programacio_General {
         return $items;
     }
     
+    /**
+     * Elimina la programació que correspongui amb el identificador passat com a paràmetre, de la base de dades.
+     * 
+     * @param Integer $idprogramacio_general
+     */
     static function eliminarProgramacio($idprogramacio_general) {
         $sql = "DELETE FROM programacions_general WHERE idprogramacio_general = $idprogramacio_general";
         mysql_query($sql);
     }
     
+    /**
+     * Assigna l'atribut '$this->idperiodes_actual' amb el identificador del periode escolar actual.
+     */
     function importarProgramacio() {
-        $sql = "SELECT FROM periodes_escolars WHERE actual = 'S'";
         $items = getCursActual();
         
         $this->idperiodes_escolars = $items->idperiodes_escolars;
     }
     
-    function inserirModificacio($descripcio = null) {
-        if ($descripcio == null) {
-            $descripcio = "Creació del document.";
-        }
-        
-        $novaModificacio = new Modificacio($this->data_creacio, $descripcio, $this->idprogramacio_general, null);
-        $novaModificacio->inserirModificacio();
-        
-    }
-    
+    /**
+     * Recull la informació necessaria per a generar la portada del document que es genera a la classe 'Document'.
+     * Selecciona el nom del pla d'estudi, nom del mòdul, nom del curs, durada del mòdul, hores de lliure disposició 
+     * del mòdul i el nom del periode escolar per a la que esta feta la programació.
+     * 
+     * @param Integer $idmodul
+     * @param Integer $idcurs
+     * @param Integer $idperiodes_escolar
+     * @return array
+     */
     static function getInformacioPortada($idmodul, $idcurs, $idperiodes_escolar) {
         $sql = "SELECT pe.Nom_plan_estudis, m.nom_modul, c.nom_curs, m.hores_finals, m.horeslliuredisposicio, p.Nom 
         FROM plans_estudis pe, moduls m, curs c, periodes_escolars p WHERE pe.idplans_estudis = m.idplans_estudis 
@@ -234,8 +270,17 @@ class Programacio_General {
         return $items;
     }
     
+    /**
+     * Recull la informació necessaria de les UFS i del curs que corresponen al mòdul i al curs passats com a paràmetre 
+     * per a poder utilitzar-la a la classe 'Document' i generar el document. Selecciona el identificador de les 
+     * UFS, nom de la UF i les hores de lliure disposició de la UF.
+     * 
+     * @param Integer $idmodul
+     * @param Integer $idcurs
+     * @return array
+     */
     static function getUFSModulCurs($idmodul, $idcurs) {
-        $sql = "SELECT nom_uf, hores, horeslliuredisposicio FROM unitats_formatives WHERE idunitats_formatives IN (SELECT "
+        $sql = "SELECT idunitats_formatives, nom_uf, hores, horeslliuredisposicio FROM unitats_formatives WHERE idunitats_formatives IN (SELECT "
         . " id_mat_uf_pla FROM grups_materies WHERE id_grups IN (SELECT idgrups FROM grups WHERE idcurs = $idcurs) AND "
         . "idunitats_formatives IN (SELECT id_ufs FROM moduls_ufs WHERE id_moduls = $idmodul))";
         
@@ -249,6 +294,14 @@ class Programacio_General {
         return $items;
     }
     
+    /**
+     * Comprova que la programació passada com a paràmetre tingui el valor passat en el camp marcat.
+     * 
+     * @param Integer $idprogramacio_general
+     * @param Integer $camp
+     * @param Integer $valor
+     * @return boolean
+     */
     static function comprovarEstat($idprogramacio_general, $camp, $valor) {
         $sql = "SELECT pg.$camp FROM programacions_general pg WHERE pg.idprogramacio_general = $idprogramacio_general";
         $items = array();
@@ -266,6 +319,14 @@ class Programacio_General {
         return true;
     }
     
+    /**
+     * Comprova primer que el camp revisat de la programació passada com a pàrametre tingui el valor 'G' (Guardat), 
+     * amb la funció 'comprovarEstat()'. Si el valor retornat per la funció es true, canvia el camp 'revisat' de la 
+     * programació amb el valor 'E' (Enviada) utilitzant la funció 'canviarEstat()'.
+     * 
+     * @param Integer $idprogramacio_general
+     * @return boolean
+     */
     static function enviarProgramacio($idprogramacio_general) {
         $correcte = Programacio_General::comprovarEstat($idprogramacio_general, "revisat", "G");
         
@@ -276,22 +337,172 @@ class Programacio_General {
         return $correcte;
     }
     
-    static function enviarRevisio($idprogramacio_general, $aprovat) {
-        $correcte = comprovarEstat($idprogramacio_general, "revisat", "E");
+    /**
+     * Si el valor '$aprovat' es true:
+     * 
+     * 1. Canvia el camp 'revisat' de la programació passada com a paràmetre amb el valor 'A' (Aprovada) utilitzant 
+     * la funció 'canviarEstat().'
+     * 
+     * 2. Canvia el camp 'aprovat' de la programació passada com a paràmetre amb el valor 'E' (Enviada) utilitzant la 
+     * funció 'canviarEstat()'.
+     * 
+     * 3. Canvia el camp 'professorRevisio' de la programació passada com a paràmetre per el identificador del professor 
+     * passat també com a paràmetre de la funció.
+     * 
+     * Si el valor '$aprovat' es false, simplement canvia el valor del camp 'revisat' de la programació passada 
+     * per paràmetre per una 'D' (Declinada).
+     * 
+     * 
+     * @param Integer $idprogramacio_general
+     * @param boolean $aprovat
+     * @param Integer $idprofessor
+     */
+    static function enviarRevisio($idprogramacio_general, $aprovat, $idprofessor) {
         
-        if ($correcte) {
-            if ($aprovat) {
-                $this->canviarEstat("S", "revisat", $idprogramacio_general);
-            } else {
-                $this->canviarEstat("N", "revisat", $idprogramacio_general);
-            } 
+        if ($aprovat == "true") {
+            Programacio_General::canviarEstat("A", "revisat", $idprogramacio_general, $idprofessor);
+            Programacio_General::canviarEstat("E", "aprovat", $idprogramacio_general);
+            Programacio_General::canviarEstat($idprofessor, "professorRevisio", $idprogramacio_general);
+        } else {
+            Programacio_General::canviarEstat("D", "revisat", $idprogramacio_general, $idprofessor);
+        } 
+    }
+    
+    /**
+     * Si el valor '$aprovat' es true:
+     * 
+     * 1. Canvia el camp 'aprovat' de la programació passada com a paràmetre amb el valor 'A' (Aprovada) utilitzant 
+     * la funció 'canviarEstat().'
+     * 
+     * 2. Canvia el camp 'professorAprovacio' de la programació passada com a paràmetre per el identificador del professor 
+     * passat també com a paràmetre de la funció.
+     * 
+     * Si el valor '$aprovat' es false, simplement canvia el valor del camp 'aprovat' de la programació passada 
+     * per paràmetre per una 'D' (Declinada).
+     * 
+     * 
+     * @param Integer $idprogramacio_general
+     * @param boolean $aprovat
+     * @param Integer $idprofessor
+     */
+    static function enviarAprovacio($idprogramacio_general, $aprovat, $idprofessor) {
+        if ($aprovat == "true") {
+            Programacio_General::canviarEstat("A", "aprovat", $idprogramacio_general, $idprofessor);
+            Programacio_General::canviarEstat($idprofessor, "professorAprovacio", $idprogramacio_general);
+        } else {
+            Programacio_General::canviarEstat("D", "aprovat", $idprogramacio_general, $idprofessor);
+        } 
+    }
+    
+    /**
+     * Canvia el camp passat com a paràmetre per el valor passat com a paràmetre de la programació passada també com 
+     * a paràmetre de la funció. 
+     * 
+     * @param String $estat
+     * @param String $camp
+     * @param Integer $idprogramacio_general
+     * @param Integer $idprofessor
+     */
+    static function canviarEstat($estat, $camp, $idprogramacio_general, $idprofessor = null) {
+        $sql = "UPDATE programacions_general SET $camp = '$estat' WHERE idprogramacio_general = $idprogramacio_general";
+        mysql_query($sql);
+        
+        if ($estat == "S") {
+            if ($camp == "revisat") {
+                $sql = "UPDATE programacions_general SET professorRevisio = $idprofessor WHERE idprogramacio_general = $idprogramacio_general";
+            } else if ($camp == "aprovat") {
+                $sql = "UPDATE programacions_general SET professorAprovacio = $idprofessor WHERE idprogramacio_general = $idprogramacio_general";
+            }
+            mysql_query($sql);
+        } 
+    }
+    
+    /*
+     * Retorna alguns atributs en format json
+     */
+    function to_json() {
+        return 
+                json_encode([
+               'idprogramacio_general' =>$this->getIdprogramacio_general(),
+               'nomDocument' => $this->getNom_document(),
+               'estrategies' => $this->getEstrategies_metodologies(),
+               'recursos' => $this->getRecursos(),
+               'data_creacio' => $this->getData_creacio(),
+               'idperiodes_escolars' => $this->getIdperiodes_escolars(),
+               'idprofessors' => $this->getIdprofessors(),
+               'idmoduls' => $this->getIdmoduls(),
+               'idcurs' => $this->getIdcurs()
+               ]);
+    }   
+    
+    /**
+     * Funció que retorna el nom i cognoms del usuari que ha revisat la programació passada com a paràmetre. Aquesta 
+     * informació s'utilitzarà per a omplir el document que es generà a la classe 'Document'.
+     * 
+     * @param Integer $idprogramacio_general
+     * @return string
+     */
+    static function getNomProfessorRevisio($idprogramacio_general) {
+        $sql = "SELECT cp.Valor AS 'nom' FROM contacte_professor cp, programacions_general pg WHERE cp.id_professor = pg.professorRevisio "
+        . "AND pg.idprogramacio_general = $idprogramacio_general AND cp.id_tipus_contacte = 1";
+        
+        $items = array();
+
+        $rs = mysql_query($sql);
+
+        while ($row = mysql_fetch_assoc($rs)) {
+            $items[] = $row;
+        }
+        
+        if (isset($items[0]['nom'])) {
+            $sql = "SELECT cp.Valor AS 'cognom' FROM contacte_professor cp, programacions_general pg WHERE cp.id_professor = pg.professorRevisio "
+            . "AND pg.idprogramacio_general = $idprogramacio_general AND cp.id_tipus_contacte = 4";
+
+            $rs = mysql_query($sql);
+
+            while ($row = mysql_fetch_assoc($rs)) {
+                $items[0]['nom'] .= " " . $row['cognom'];
+            }
+
+            return $items[0]['nom'];
+        } else {
+            return null;
         }
     }
     
-    static function canviarEstat($estat, $camp, $idprogramacio_general) {
-        $sql = "UPDATE programacions_general SET $camp = '$estat' WHERE idprogramacio_general = $idprogramacio_general";
+    /**
+     * Funció que retorna el nom i cognoms del usuari que ha aprovat la programació passada com a paràmetre. Aquesta 
+     * informació s'utilitzarà per a omplir el document que es generà a la classe 'Document'.
+     * 
+     * @param Integer $idprogramacio_general
+     * @return string
+     */
+    static function getNomProfessorAprovacio($idprogramacio_general) {
+        $sql = "SELECT cp.Valor AS 'nom' FROM contacte_professor cp, programacions_general pg WHERE cp.id_professor = pg.professorAprovacio "
+        . "AND pg.idprogramacio_general = $idprogramacio_general AND cp.id_tipus_contacte = 1";
         
-        mysql_query($sql);
+        $items = array();
+
+        $rs = mysql_query($sql);
+
+        while ($row = mysql_fetch_assoc($rs)) {
+            $items[] = $row;
+        }
+        
+        if (isset($items[0]['nom'])) {
+            $sql = "SELECT cp.Valor AS 'cognom' FROM contacte_professor cp, programacions_general pg WHERE cp.id_professor = pg.professorAprovacio "
+            . "AND pg.idprogramacio_general = $idprogramacio_general AND cp.id_tipus_contacte = 4";
+
+            $rs = mysql_query($sql);
+
+            while ($row = mysql_fetch_assoc($rs)) {
+                $items[0]['nom'] .= " " . $row['cognom'];
+            }
+        
+            return $items[0]['nom'];
+        } else {
+            return null;
+        }
     }
     
 }

@@ -46,19 +46,21 @@ $rs = mysql_query($sql);
 $items = array();
 $i = 0;
 while($row = mysql_fetch_assoc($rs)){  
-    if ($row['revisat'] == "S") {
-        if ($row['aprovat'] == "S") {
-            $row['estat'] = "Aprovat";
+    if ($row['revisat'] == "A") {
+        if ($row['aprovat'] == "A") {
+            $row['estat'] = "Aprovada";
         } else if ($row['aprovat'] == "E") {
             $row['estat'] = "Pendent d'aprovació";
-        } else if ($row['aprovat'] == "N") {
-            $row['estat'] = "Declinat";
+        } else if ($row['aprovat'] == "D") {
+            $row['estat'] = "Declinada";
         }
     } else {
         if ($row['revisat'] == "E") {
             $row['estat'] = "Pendent de revisió";
         } else if ($row['revisat'] == "G") {
             $row['estat'] = "No enviat";
+        } else if ($row['revisat'] == "D") {
+            $row['estat'] = "Declinada";
         }
     }
     $items[] = $row;

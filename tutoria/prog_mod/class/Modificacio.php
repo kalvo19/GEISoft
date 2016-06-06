@@ -1,16 +1,14 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of Modificacions
+ * Descripció of Modificacions
+ * 
+ * Classe que conté els atributs i mètodes necessaris per a gestionar les modificacions que es fan de les 
+ * diferents programacions guardades.
  *
  * @author kalvo19
  */
+
 class Modificacio {
     //put your code here
     
@@ -23,11 +21,11 @@ class Modificacio {
     
     function __construct($data_modificacio, $descripcio, $idprogramacio_general = null, $idprogramacio_aula = null) {
         $this->idmodificacions = $this->assignarIdmodificacio();
-        $this->versio = $this->assignarVersio();
         $this->data_modificacio = $data_modificacio;
         $this->descripcio = $descripcio;
         $this->idprogramacio_general = $idprogramacio_general;
         $this->idprogramacio_aula = $idprogramacio_aula;
+        $this->versio = $this->assignarVersio();
     }
     
     /**
@@ -35,16 +33,23 @@ class Modificacio {
      */
     function inserirModificacio() {
         $sql = "";
+        $this->descripcio = str_replace("'", "´", $this->descripcio);
         
-        if ($this->idprogramacio_general == null) {
+        if (empty($this->idprogramacio_general)) {
             $sql = "INSERT INTO modificacions VALUES($this->idmodificacions, $this->versio, '$this->data_modificacio', '$this->descripcio', null, $this->idprogramacio_aula)";
-        } else if ($this->idprogramacio_aula == null) {
+        } else if (empty($this->idprogramacio_aula)) {
             $sql = "INSERT INTO modificacions VALUES($this->idmodificacions, $this->versio, '$this->data_modificacio', '$this->descripcio', $this->idprogramacio_general, null)";
         }      
-       
+        
         mysql_query($sql);
     }
     
+    /**
+     * Assigna al atribut '$this->idmodificacions' un nou identificador per a poder inserir-lo a la base 
+     * de dades.
+     * 
+     * @return Integer
+     */
     function assignarIdmodificacio() {
         $sql = "SELECT MAX(idmodificacions) as 'maxim' FROM modificacions";
         $rs = mysql_query($sql);
@@ -63,23 +68,35 @@ class Modificacio {
 
     }
     
+    /**
+     * Comprova la versió més recent de la programació que hi ha a l'atribut del objecte '$this->idprogramacio_general', i 
+     * incrementa el valor obtingut per a que pugui ser inserida a la base de dades sense crear conflictes.
+     * 
+     * @return Integer
+     */
     function assignarVersio() {
         $sql = "SELECT MAX(versio) as 'versio' FROM modificacions WHERE idprogramacio_general = $this->idprogramacio_general";
         $rs = mysql_query($sql);
         
         $versio = "";
         
-        if ($rs) {
+        if (!$rs) {
+            $versio = 0;
+        } else {
             while ($row = mysql_fetch_assoc($rs)) {
                 $versio = $row["versio"];
             }
-        } else {
-            $versio = 0;
         }
         
         return ++$versio;
     }
     
+    /**
+     * Elimina totes les modificacions registrades corresponents a la programació passada com a paràmetre.
+     * 
+     * @param Integer $tipusProgramacio
+     * @param Integer $idprogramacio
+     */
     static function eliminarModificacionsProgramacio($tipusProgramacio, $idprogramacio) {
         if ($tipusProgramacio == 1) {
             $sql = "DELETE FROM modificacions WHERE idprogramacio_general = $idprogramacio";
@@ -90,6 +107,14 @@ class Modificacio {
         mysql_query($sql);
     }
     
+    /**
+     * Obté tota la informació de totes les modificacions que s'han realitzat sobre la programació passada com a 
+     * paràmetre. S'utilitzarà per a omplir el document que es generà a la classe 'Document'.
+     * 
+     * @param Integer $tipusProgramacio
+     * @param Integer $idprogramacio
+     * @return array
+     */
     static function getModificacions($tipusProgramacio, $idprogramacio) {
         if ($tipusProgramacio == 1) {
             $sql = "SELECT * FROM modificacions WHERE idprogramacio_general = $idprogramacio";

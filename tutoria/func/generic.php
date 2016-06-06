@@ -26,7 +26,30 @@
 	include_once('func_ccc.php');
 	include_once('func_dies.php');
 	include_once('func_altres_hores.php');
+        
+/*  ********************************************************************************************************
+/*   mostrarAccents --> Sustitueix codi HTML que tenens els accents per al caràcter corresponent
+************************************************************************************************************ */
 
+function mostrarAccents($cadena) {
+    
+    $codis = array("&Agrave;", "&Aacute;", "&Acirc;", "&Atilde;", "&Auml;", "&Aring;", "&AElig;", "&Ccedil;", 
+    "&Egrave;", "&Eacute;", "&Ecirc;", "&Euml;", "&Igrave;", "&Iacute;", "&Icirc;", "&Iuml;", "&ETH;", "&Ntilde;", 
+    "&Ograve;", "&Oacute;", "&Ocirc;", "&Otilde;", "&Ouml;", "&times;", "&Oslash;", "&Ugrave;", "&Uacute;", "&Ucirc;", "&Uuml",
+    "&Yacute;", "&THORN;", "&szlig;", "&agrave;", "&aacute;", "&acirc;", "&atilde;", "&auml;", "&aring;", "&aElig;", 
+    "&egrave;", "&eacute;", "&ecirc;", "&euml;", "&igrave;", "&iacute;", "&icirc;", "&iuml;", "&ntilde;", "&ograve;", 
+    "&oacute;", "&ocirc;", "&otilde;", "&ouml;", "&oslash;", "&ugrave;", "&uacute;", "&icirc;", "&uuml;", "&Ccedil;", 
+    "&nbsp;");
+    
+    $accents = array("À", "Á", "Â", "Ã", "Ä", "Å", "Æ", "Ç","È", "É", "Ê", "Ë", "Ì", "Í", "Î", "Ï", "Ð", "Ñ", "Ò", 
+    "Ò", "Ô", "Õ", "Ö", "×", "Ø", "Ù", "Ú", "Û", "Ü", "Ý","Þ", "ß", "à", "á", "â", "ã", "ä", "å", "æ", "è", 
+    "é", "ê", "ë", "ì", "í", "î", "ï", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ç", "");
+    
+    $novaCadena = str_replace($codis, $accents, $cadena);
+    
+    return $novaCadena;
+}
+    
 /*  ********************************************************************************************************
 /*   treureAccents --> Treure accents d'un string
 ************************************************************************************************************ */

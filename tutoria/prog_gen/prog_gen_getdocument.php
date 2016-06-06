@@ -25,5 +25,8 @@ $items[0]["recursos"], $items[0]["revisat"], $items[0]["aprovat"], $items[0]["id
 $items[0]["idmoduls"], $items[0]["idcurs"], $items[0]["professorRevisio"], $items[0]["professorAprovacio"]);
 
 $nouDocument = new Document($novaProgramacioGeneral);
-$nouDocument->generarProgramacioComuna("../docsodt/temp/programacions_comunes/" . $novaProgramacioGeneral->getNom_document() . ".$format");
 
+$fitxer = $novaProgramacioGeneral->getNom_document() . ".$format";
+$nouDocument->generarProgramacioComuna("../docsodt/temp/programacions_comunes/" . $fitxer);
+
+echo $fitxer;

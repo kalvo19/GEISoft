@@ -17,53 +17,62 @@
 ?>
 
 <div id="dlg_main" class="easyui-panel" style="width:auto;height:auto;">
-    <table id="dg" class="easyui-datagrid" title="Llistat programacions m&ograve;dul" style="height:auto;"
+    <table id="dg" class="easyui-datagrid" title="GESTIÓ DE PROGRAMACIONS DIDÀCTIQUES GENERALS" style="height:auto;"
             data-options="
             singleSelect: true,
             pagination: false,
+            fitColumns: true,
             rownumbers: true,
             toolbar: '#toolbar',
             url: './prog_gen/prog_gen_getdata.php',
             onClickRow: getProgramacioGeneral">    
         <thead>  
             <tr>
-                <th field="nom_document" width="240" sortable="true">Document</th>
+                <th field="nom_document" width="200" sortable="true">Document</th>
                 <th field="nom_modul" width="320" sortable="true">Mòdul</th>
-                <th field="nom_curs" width="110" sortable="false">Curs</th>
-                <th field="data_creacio" width="100" sortable="true">Data creaci&oacute;</th>
-                <th field="Nom" width="160" sortable="true">Periode escolar</th>
-                <th field="estat" width="90" sortable="true">Estat</th>
+                <th field="nom_curs" width="90" sortable="false">Curs</th>
+                <th field="data_creacio" width="90" sortable="true">Data creaci&oacute;</th>
+                <th field="Nom" width="100" sortable="true">Periode escolar</th>
+                <th field="estat" width="130" sortable="true">Estat</th>
             </tr>  
         </thead>  
     </table> 
 
     <div id="toolbar" style="height:auto; padding-top:7px; padding-bottom:7px;">
-        <p>
-            <label for="pla_estudis">&nbsp;Pl&agrave; d'estudi</label>
-            <select id="pla_estudis" name="pla_estudis" style="width:610px">
-            </select>
-        </p>
-        <p>
-            <label for="moduls">&nbsp;M&ograve;dul</label>
-            <select id="moduls" name="moduls" class="easyui-combogrid" style="width:610px">
-            </select>
-            <label for="curs">&nbsp;Curs</label>
-            <select id="curs" name="curs" class="easyui-combogrid" style="width:110px">
-            </select>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch(<?php echo $idprofessor; ?>)">Cercar Programacions</a>
-        </p>
-        <div class="document-manegement">
-            <div class="add-document-button">
-                <a id="add_button" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="crearProgramacio()">Crear Programaci&oacute; M&ograve;dul</a>
+        <div class="north_toolbar">
+            <div id="select_pla_estudis">
+                <label for="pla_estudis">Pla d'estudi</label>
+                <select id="pla_estudis" name="pla_estudis" style="width:410px">
+                </select>
+            </div>
+            <div id="select_moduls">
+                <label for="moduls">M&ograve;dul</label>
+                <select id="moduls" name="moduls" class="easyui-combogrid" style="width:410px">
+                </select>
+            </div>
+        </div>
+        <div class="center_toolbar">  
+            <div id="select_curs">
+                <label for="curs">Curs</label>
+                <select id="curs" name="curs" class="easyui-combogrid" style="width:110px">
+                </select>
             </div>
             <div class="menegement-document-buttons">
                 <label for="menu-gestio">Gestionar: </label>
-                <a href="#" id="prevButtonPDF" class="easyui-linkbutton" onclick="visualitzarProgramacio('pdf')" data-options="plain:true, disabled: true, text: 'PDF'">PDF</a>
-                <a href="#" id="prevButtonODT" class="easyui-linkbutton" onclick="visualitzarProgramacio('odt')" data-options="plain: true, disabled: true, text: 'ODT'">ODT</a>
+                <a href="#" id="prevButtonPDF" class="easyui-linkbutton" onclick="visualitzarProgramacio('pdf')" data-options="iconCls: 'icon-pdf', plain: true, disabled: true, text: 'PDF'">Descarregar PDF</a>
+                <a href="#" id="prevButtonODT" class="easyui-linkbutton" onclick="visualitzarProgramacio('odt')" data-options="iconCls: 'icon-odt', plain: true, disabled: true, text: 'ODT'">Descarregar ODT</a>
                 <a href="#" id="modButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cut', disabled: true" onclick="modificarProgramacio(<?php echo $idprofessor; ?>)">Modificar</a>
                 <a href="#" id="delButton" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel', disabled: true">Eliminar</a>
             </div>
-            <div>
+            <div id="search_button">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch(<?php echo $idprofessor; ?>)">Cercar Programacions</a>
+            </div>
+        </div>
+        <div class="document-manegement">
+            <div class="add-document-button">
+                <a id="add_button" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="crearProgramacio()">Crear Programaci&oacute; General</a>
+            </div>
+            <div id="send_section">
                 <a id="sendButton" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-send',plain:true, disabled: true">Enviar per aprovació</a>
                 <a id="importButton" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:true, disabled: true" onclick="verificarProgramacioImportar()" >Importar al curs actual</a>
             </div>
@@ -159,7 +168,7 @@
      </div>
 </div>
 
-<div id="win-send" class="easyui-window" title="Enviar programaci&oacute;" style="width:300px;height:auto" data-options="modal:true, closed:true">
+<div id="win-send" class="easyui-window" title="Enviar programaci&oacute;" style="width:400px;height:auto" data-options="modal:true, closed:true">
     <div data-options="region:'north'">
     </div>
     <div data-options="region:'south'">
@@ -215,7 +224,7 @@
     var programacioModul = new Object();
     
     //Objecte que conté els camps necessaris per a crear una nova programació comuna.
-    var novaProgramacio = {pla_estudi: false, modul: false, curs: false};
+    var novaProgramacio = {idplans_estudis: false, idmoduls: false, idcurs: false};
     
     //Vector que conté l'objecte amb els filtres de cerca de la programació comuna.
     var llistaProgramacioModul = new Array(programacioModul);
@@ -249,13 +258,13 @@
     
     /**
      * Recull el valor de la selecció que el usuari ha fet al camp dels plans d'estudi, afegeix
-     * el valor al objecte que guarda les dades de filtre de cerca i posteriorment prepara el 
+     * el valor al objecte que guarda les dades de filtre de cerca, i posteriorment prepara el 
      * segon selector amb els mòduls que corresponen al pla d'estudi marcat i el tercer selector amb tots 
      * els cursos disponibles (Primer Curs, Segon Curs).
      */
     function getPlaEstudi() {
         var codiPlaEstudi = $("#pla_estudis").combogrid("getValue");
-        programacioModul.pla_estudi = codiPlaEstudi;
+        programacioModul.idplans_estudis = codiPlaEstudi;
         $("#moduls").combogrid({delay: 500,
             mode: 'remote',
             url: './pe/pe_getmodul.php?idplan_estudi=' + codiPlaEstudi,
@@ -272,7 +281,7 @@
        
         //Text per defecte que tindrà el selector dels mòduls
         $("#moduls").combogrid("setValue", "Selecciona Mòdul");
-        programacioModul.modul = false;
+        programacioModul.idmoduls = false;
 
         $("#curs").combogrid({delay: 500,
             mode: 'remote',
@@ -291,6 +300,7 @@
         //Text per defecte que tindrà el selsector dels cursos.
         $("#curs").combogrid("setValue", "Curs");
         
+        doSearch(<?=$idprofessor?>);
     }
     
     /**
@@ -299,7 +309,9 @@
      */
     function getModul() {
         var codiModul = $("#moduls").combogrid("getValue");
-        programacioModul.modul = codiModul;
+        programacioModul.idmoduls = codiModul;
+        
+        doSearch(<?=$idprofessor?>);
     }
     
     /**
@@ -308,25 +320,38 @@
      */
     function getCurs() {
         var codiCurs = $("#curs").combogrid("getValue");
-        programacioModul.curs = codiCurs;
+        programacioModul.idcurs = codiCurs;
+        
+        doSearch(<?=$idprofessor?>);
     }
     
     /**
-     * 
-     * @param {integer} idprofessor
      * Fa una consulta AJAX a la url especificada en el atribut 'data-options' del datagrid, passant com a paràmetres,
      * la id del professor, la id del pla d'estudi, la id del mòdul i la id del curs que el usuari ha seleccionat en els 
      * selectors. Aquesta consulta retorna en forma de files tots les programacions que coincideixen amb el filtre 
      * especificat.
+     * 
+     * @param {integer} idprofessor
      */
     function doSearch(idprofessor) {
-        console.log(idprofessor);
         disabledMenuGestionar();
         $('#dg').datagrid('load',{  
                 idprofessors : idprofessor,
                 idplans_estudis : $('#pla_estudis').combogrid("getValue"),
                 idmoduls : $('#moduls').combogrid('getValue'),
                 idcurs  : $('#curs').combogrid('getValue')
+        });
+        
+        $('#dg').datagrid({
+	rowStyler: function(index,row){
+		if (row.estat === "Declinada"){
+                    return 'background-color:#FF7979;'; 
+		}
+                
+                if (row.estat === "Aprovada") {
+                    return 'background-color:#6EEB89;'; 
+                }
+            }
         });
         
         tancarFinestraModal();
@@ -337,17 +362,17 @@
      * una de les programacions mostrades al datagrid. Recull el valor id de la programació seleccionada i posteriorment 
      * habilita els botons que permeten la gestió de la programació. 
      */
-    function getProgramacioGeneral(idprofessor) {
+    function getProgramacioGeneral() {
         dadesProgramacioSeleccionada = $("#dg").datagrid('getSelected');
         idprogramacio_general = dadesProgramacioSeleccionada.idprogramacio_general;
         enabledMenuGestionar(idprogramacio_general);
     }
     
     /*
+     * Habilita els botons que permeten gestionar una programació (modificar, eliminar, visualitzar, Importar i enviar).
+     * I a més carregà les funcions que s'activaran en el moment de prémer cadascún dels botons. 
      * 
-     * @param {integer} idprogramacio
-     * Habilita els botons que permeten gestionar una programació (Modificar, eliminar, Visualitzar i Importar).
-     * I a més carregà les funcions que s'activaran en el moment de prémer. 
+     * @param {String} idprogramacio
      */
     function enabledMenuGestionar(idprogramacio) {
         $("#prevButtonPDF").linkbutton({disabled: false}); 
@@ -360,10 +385,15 @@
         afegirFuncionsMenuGestionar(idprogramacio);
     }
     
+    /*
+     * Assigna els events corresponetns als botons de 'Enviar per aprovació' i 'Eliminar'
+     * 
+     * @param (String) idprogramacio
+     */
     function afegirFuncionsMenuGestionar(idprogramacio) {
         $("#sendButton").unbind();
         $("#sendButton").bind('click', function() {
-            enviarProgramacio(idprogramacio, true);
+            enviarProgramacio(idprogramacio);
         });
         
         $("#delButton").unbind();
@@ -372,23 +402,41 @@
         });
     }
     
-    function enviarProgramacio(idprogramacio, aprovat) {
+    /**
+     * Funció que s'activa quan el usuari prem el botó de 'Enviar per aprovació'. Comprova que la programació no hagi 
+     * sigut enviada ni tampoc hagi estat declinada, si s'acompleix aquestes dues condicions la programació es enviada 
+     * i per tant l'estat del document passarà a ser 'Pendent de revisió'.
+     * 
+     * @param {String} idprogramacio
+     */
+    function enviarProgramacio(idprogramacio) {
         $.post("./prog_gen/prog_gen_send.php", 
         {
-            idprogramacio: idprogramacio,
-            aprovat: aprovat
+            idprogramacio: idprogramacio
         }, function(correcte) {
             modalWinSend(correcte);
         });
     }
     
+    /**
+     * Obre una finestra modal amb un missatge d'avis a l'usuari. 
+     * Si el paràmetre passat:
+     * 
+     * true 
+     *      -> La programació s'ha enviat correctament per a la seva revisió
+     * false 
+     *      -> La programació no ha estat acceptada, cal fer una modificació per a poder tornar a enviar-la
+     *      -> La programació ja ha sigut enviada i està pendent d'aprovació.
+     *      
+     * @param (boolean) correcte
+     */
     function modalWinSend(correcte) {
         $("#win-send").window('open');
         var element = $("#win-send div:first-child");
         if (correcte) {
             $(element).html("<p>La programació s'ha enviat correctament per a la seva revisió</p>");
         } else {
-            if (dadesProgramacioSeleccionada.revisat === "N" || dadesProgramacioSeleccionada.aprovat === "N") {
+            if (dadesProgramacioSeleccionada.revisat === "D" || dadesProgramacioSeleccionada.aprovat === "D") {
                 $(element).html("<p>La programació no ha estat acceptada, cal fer una modificació per a poder tornar a enviar-la</p>");
             } else {
                 $(element).html("<p>La programació ja ha sigut enviada i està pendent d'aprovació.</p>");
@@ -396,14 +444,31 @@
         }
     }
     
+   /**
+    * S'activa quan el usuari prem el botó de 'Descarregar PDF' o 'Descarregar ODT'. Genera el document en el format
+    * passat com a paràmetre a la funció (odt, pdf). 
+    *
+    * @param {String} format
+    */
     function visualitzarProgramacio(format) {
         $.post("./prog_gen/prog_gen_getdocument.php", 
         {
             idprogramacio_general: dadesProgramacioSeleccionada.idprogramacio_general,
             format: format
-        }, function(data) {
-            console.log(data);
+        }, function(nom_fitxer) {
+            descarregarDocument(nom_fitxer);
         });
+    }
+    
+    /**
+    * Descarregà el document generat del directori temporal de l'aplicació '/docsodt/temp/programacions_comunes' a 
+    * l'ordinador de l'usuari.
+    * 
+    * @param {String} nom_fitxer 
+    */
+    function descarregarDocument(nom_fitxer) {
+        var url = "./docsodt/temp/programacions_comunes/" + nom_fitxer;
+        document.location.href = url;
     }
     
     /**
@@ -418,11 +483,15 @@
         $("#importButton").linkbutton({disabled: true});
     }
     
+    /*
+    * S'activa quan el usuari prem el botó de modificar. Carrega el panell que conté el formulari de creació de les 
+    * programacions, però amb les dades de la programació seleccionada carregades. 
+    */
     function modificarProgramacio(idprofessor) {
-        novaProgramacio.modul = dadesProgramacioSeleccionada.idmoduls;
-        novaProgramacio.curs = dadesProgramacioSeleccionada.idcurs;
-        novaProgramacio.professors = idprofessor;
-        novaProgramacio.programacio_general = idprogramacio_general;
+        novaProgramacio.idmoduls = dadesProgramacioSeleccionada.idmoduls;
+        novaProgramacio.idcurs = dadesProgramacioSeleccionada.idcurs;
+        novaProgramacio.idprofessors = idprofessor;
+        novaProgramacio.idprogramacio_general = idprogramacio_general;
         
         var programacio = JSON.stringify(novaProgramacio);
         var url = "./vista_prog/prog_gen_form.php?programacio=" + programacio;
@@ -452,25 +521,6 @@
         });
     }
     
-    function verificarProgramacioCrear() {
-        var modul = novaProgramacio.modul;
-        var curs = novaProgramacio.curs;
-        
-        console.log(modul + " " + curs);
-        $.post("./prog_gen/prog_gen_check.php", 
-        {
-            modul: modul,
-            curs: curs
-        }, function(data) {
-            if (data) {
-                reenviarFormulariCreacio();
-            } else {
-                getNomModulCurs(novaProgramacio.modul, novaProgramacio.curs);
-                delete novaProgramacio["professor"];
-            }
-        });
-    }
-    
     function getNomModulCurs(modul, curs) {
         $.post("./prog_gen/prog_gen_getModulCurs.php", 
         {
@@ -478,7 +528,6 @@
             curs: curs
         }, function(data) {
             var resultats = JSON.parse(data);
-            console.log(resultats);
             errorProgramacio(resultats[0].nom_modul, resultats[0].nom_curs);
         });
     }
@@ -515,9 +564,11 @@
     }
     
     /**
-     * Obre una finestra modal advertint al usuari que la programació de la que es vol importar, ja conté una altra per al 
-     * curs actual i que per tant no es poden duplicar. 
-     */
+    * Finestra modal d'importació
+    * 
+    * Obre una finestra modal advertint al usuari que la programació de la que es vol importar, ja conté una altra per al 
+    * curs actual i que per tant no es poden duplicar. 
+    */
     function errorProgramacio(nom_modul, nom_curs) {
         nom_modul = nom_modul.match(/[A-Za-z0-9\s\.'áàéèííóòú]+/g)[1];
         $("#import-document-alert").html("<p>La programació comuna del mòdul <b>" + nom_modul + "</b> de <b>" + nom_curs + "</b> ja existeix per al curs actual.</p>");
@@ -525,12 +576,14 @@
     }
     
     /*
+     * Finestra modal d'importació
      * 
-     * @param {DOM Object} element
-     * @return (String) 
      * Comprova que el camp o imput de text passat com a paràmetre contingui valors vàlids, o sigui ser caràcters 
      * alfanúmerics, guio i guio baix (/^[A-Za-z0-9-_]+$/). Si el camp té els valors vàlida retorna el contingut 
      * del camp, sino retorna fals.
+     * 
+     * @param {DOM Object} element
+     * @return (String) 
      */
     function comprovarNomDocument(element) {
         var patro = /^[A-Za-z0-9-_]+$/;
@@ -562,9 +615,9 @@
         
         $.post("./prog_gen/prog_gen_getFillFields.php", 
         {   
-            idpla_estudi: novaProgramacio.pla_estudi,
-            idmodul: novaProgramacio.modul,
-            idcurs: novaProgramacio.curs
+            idpla_estudi: novaProgramacio.idplans_estudis,
+            idmodul: novaProgramacio.idmoduls,
+            idcurs: novaProgramacio.idcurs
         }, function(data) {
             var dadesCamps = JSON.parse(data);
             omplirCampsModalWin(dadesCamps);
@@ -572,10 +625,12 @@
     }
     
     /**
+     * Finestra modal de creació
      * 
-     * @param {Object} dadesCamps
      * Omple els tres selectors que apareixen en la finestra modal de creació de la programació amb les dades passades com a 
      * paràmetres en el ordre corresponents.
+     * 
+     * @param {Object} dadesCamps
      */
     function omplirCampsModalWin(dadesCamps) {
         var camps = document.getElementsByClassName('prog_fields');
@@ -592,7 +647,7 @@
          * Si el atribut no es fals deixa el selector amb el valor que el usuari ha seleccionat en el anterior formulari 
          * (formulari de cerca). En cas contrari s'omple el camp amb un text per defecte ("Selecciona pla d'estudi").
          */
-        if (!novaProgramacio.pla_estudi) {
+        if (!novaProgramacio.idplans_estudis) {
             $(camps[0]).combogrid("setValue", "Selecciona pla d'estudi");
         }
         
@@ -600,13 +655,15 @@
     }
     
      /**
+     * Finestra Modal de creació
+     * 
      * Mostra al selector dels mòduls de la finetra modal de creació, els mòduls que pertanyen al pla d'estudi marcat al 
      * selector dels plans d'estudi de la finestra modal de creació.  
      */
     function mostrarModulsModalWin() {
         $("#modul_prog").combogrid({delay: 500,
             mode: 'remote',
-            url: './pe/pe_getmodul.php?idplan_estudi=' + novaProgramacio.pla_estudi,
+            url: './pe/pe_getmodul.php?idplan_estudi=' + novaProgramacio.idplans_estudis,
             method: 'get',
             value: 'idmoduls',
             idField: 'idmoduls',
@@ -620,6 +677,8 @@
     }
     
     /**
+     * Finestra modal de creació
+     * 
      * Funció que s'activa quan el usuari selecciona una opció del selector de plans d'estudi de la finestra modal de creació.
      * Canvia els valors del selector dels mòduls en funció del plà d'estudis escollit.
      */
@@ -629,21 +688,23 @@
          * Comprova si el pla d'estudi seleccionat es diferent al que hi havia marcat, si es així resetejen les opcions que el 
          * usuari pot escollir al selector dels mòduls mostrant als pertanyents al pla d'estudi ara seleccionat. I 
          */
-        if (codiPlaEstudi != novaProgramacio.pla_estudi) {
-            novaProgramacio.pla_estudi = codiPlaEstudi;
-            novaProgramacio.modul = false;
+        if (codiPlaEstudi != novaProgramacio.plans_estudis) {
+            novaProgramacio.idplans_estudis = codiPlaEstudi;
+            novaProgramacio.idmoduls = false;
             $("#modul_prog").combogrid("setValue","Selecciona Mòdul");
             mostrarModulsModalWin();
         } 
     }
     
     /**
+     * Finestra modal de creació
+     * 
      * Funció que recull el valor que hi ha al selector de mòduls de la finestra modal de creació i l'afegeix al objecte 
      * 'novaProgramacio'
      */
     function getModulProg() {
         var codiModul = $("#modul_prog").combogrid("getValue");
-        novaProgramacio.modul = codiModul;
+        novaProgramacio.idmoduls = codiModul;
     }
     
     /**
@@ -652,13 +713,17 @@
      */
     function getCursProg() {
         var codiCurs = $("#curs_prog").combogrid("getValue");
-        novaProgramacio.curs = codiCurs;
+        novaProgramacio.idcurs = codiCurs;
     }
     
     /**
+     * Finestra modal de creació
+     * 
      * Comprova que tots els selectors de la finestra modal de creació tinguin un valor diferent a fals. O el que és el mateix 
      * comprova que els atributs del objecte 'novaProgramacio' tinguin un valor diferent a fals. Això significa que l'objecte 
      * conté les dades necessaries per a poder crear la programació del mòdul. 
+     * 
+     * @param (String) idprofessor
      */
     function comprovarCampsModalWin(idprofessor) {
         var capaErrors = document.getElementsByClassName('field-error');
@@ -678,7 +743,7 @@
                 formulariCorrecte = false;
             } else {//..En cas contrari, aquest missatge s'ocultarà
                 $(capaErrors[i]).parent().css({"display": "none"});
-                novaProgramacio.professor = idprofessor;
+                novaProgramacio.idprofessors = idprofessor;
             }
             i++;
         }
@@ -688,13 +753,31 @@
         }
     }
 
+    /**
+    * Fa una petició al servidor per comprovar que no hi hagi una programació registrada a la base de dades del mateix 
+    * mòdul i del mateix curs seleccionats.
+    */
+    function verificarProgramacioCrear() {
+        var modul = novaProgramacio.idmoduls;
+        var curs = novaProgramacio.idcurs;
+        
+        $.post("./prog_gen/prog_gen_check.php", 
+        {
+            modul: modul,
+            curs: curs
+        }, function(data) {
+            if (data) {
+                reenviarFormulariCreacio();
+            } else {
+                getNomModulCurs(novaProgramacio.idmoduls, novaProgramacio.idcurs);
+                delete novaProgramacio["professor"];
+            }
+        });
+    }
 
-        /**
-         * Comprova que la variable 'formulariCorrecte' sigui certa, en aquest cas carregarà un nou panell amb ka funció 
-         * 'open1' amb el formulari que permetrà afegir el contingut de la programació que es vol crear. Es passarà l'objecte 
-         * 'novaProgramacio' que conté tota la informació relacionada amb la programació a crear, mitjançant al mètode GET a 
-         * la url on es troba el formulari.
-         */
+   /**
+    * Carrega el panell que conté el formulari de creació de programacions.
+    */
    function reenviarFormulariCreacio() {
         tancarFinestraModal(); 
         var programacio = JSON.stringify(novaProgramacio);
@@ -716,6 +799,8 @@
      * Obra una finestra modal que sol·licita una darrere confirmació a l'usuari abans d'eliminar la programació seleccionada.
      * Aquesta eliminació es realitza mitjançant AJAX quan el usuari prem el botó d'acceptar. En cas de que el usuari prem el 
      * botó de cancel·lar, es tanca la finestra.
+     * 
+     * @param (string) idprogramacio
      */
     function eliminarProgramacio(idprogramacio) {
         $("#win-delete").window('open');
@@ -752,9 +837,22 @@
         background-color: #F4B2B2;
     }
     
+    .north_toolbar {
+        display: flex;
+        margin: 5px;
+        justify-content: space-between;
+    }
+    
+    .center_toolbar {
+        margin: 15px 5px;
+        display: flex;
+        justify-content: space-between;
+    }
+    
     .document-manegement {
         display: flex;
         justify-content: space-between;
+        margin: 15px 5px;
     }
     
     .import-document-name-field {
@@ -770,5 +868,17 @@
     
     #import-document-advertice, #import-document-alert {
         margin-left: 5px;
+    }
+    
+    .icon-pdf {
+         background: url('css/icons/pdf.png') no-repeat center center;
+    }
+    
+    .icon-send {
+         background: url('css/icons/send.png') no-repeat center center;
+    }
+    
+    .icon-odt {
+        background: url('css/icons/icon-odt.png') no-repeat center center;
     }
 </style>

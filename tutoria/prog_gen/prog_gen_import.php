@@ -20,9 +20,11 @@ while ($row = mysql_fetch_assoc($rs)) {
 }
 
 $novaProgramacioGeneral = new Programacio_General(null, $nom_document, date("Y-m-d"), $items[0]['estrategies_metodologies'], $items[0]['recursos'], 
- 'G', 'G', null, $items[0]['idprofessors'], $items[0]['idmoduls'], $items[0]['idcurs'], null, null);
+ 'G', null, null, $items[0]['idprofessors'], $items[0]['idmoduls'], $items[0]['idcurs'], null, null);
 
 $novaProgramacioGeneral->guardarProgramacio();
+$novaModificacio = new Modificacio(date("Y-m-d"), "Creació del document.", $novaProgramacioGeneral->getIdprogramacio_general(), null);
+$novaModificacio->inserirModificacio();
 
 echo json_encode($items);
     

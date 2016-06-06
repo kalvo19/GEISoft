@@ -8,6 +8,7 @@
  *
  * @author kalvo19
  */
+
 class Programacio_Aula {
     private $idprogramacio_aula;
     private $nom_document;
