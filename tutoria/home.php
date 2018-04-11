@@ -133,14 +133,14 @@
 				operacio = registre_entrada;
 			}
 
-
+/*Hello*/
 			if (operacio) {
 				url              = './ctrl_prof/ctrl_prof_reg_in.php';
 				texte            = 'Registre Sortida';
 				img              = './images/icons/icon_logout.png';
 				txt_confirm      = 'Registrem l\'entrada?';
 				icono			 = 'icon-undo';
-				
+			
 			}
 			else {
 				url              = './ctrl_prof/ctrl_prof_reg_out.php';
